@@ -11,8 +11,18 @@ from ryu.lib.packet import ethernet
 from ryu.lib import hub
 import time
 
+
+
+
 class L2monitor(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]   #OpenFlow 1.3を利用
+
+    # 初期値の入力
+    s1_out_now = 0
+    s2_in_now = 0
+    s1_out_ago = 0
+    s2_in_ago = 0
+
 
     def __init__(self, *args, **kwargs):
         super(L2monitor, self).__init__(*args, **kwargs)
