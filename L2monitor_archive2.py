@@ -100,19 +100,26 @@ class L2monitor(app_manager.RyuApp):
             self.s1_out_ago = self.s1_out_now
             self.s2_in_ago = self.s2_in_now
             print("*************************************")
+            print("")
         elif self.s1_out_now != self.s1_out_ago:
             #デバッグ用
             print("s1_inだけ更新されたよ")
+            print("s1_out: {}, s2_in: {}".format(self.s1_out_now, self.s2_in_now))
+            print("s1_out: {}, s2_in: {}".format(self.s1_out_ago, self.s2_in_ago))
+            print("")
         elif self.s2_in_now != self.s2_in_ago:
             #デバッグ用
             print("s2_outだけ更新されたよ")
+            print("s1_out: {}, s2_in: {}".format(self.s1_out_now, self.s2_in_now))
+            print("s1_out: {}, s2_in: {}".format(self.s1_out_ago, self.s2_in_ago))
+            print("")
         elif self.s1_out_now == self.s1_out_ago and self.s2_in_now == self.s2_in_ago:
+            print("s1_out: {}, s2_in: {}".format(self.s1_out_now, self.s2_in_now))
+            print("s1_out: {}, s2_in: {}".format(self.s1_out_ago, self.s2_in_ago))            
             print("*************************************")
             print("パケットは流れていません")
-            print("パケット流れてない")
             print("*************************************")
-        
-
+            print("")
 
     #Switch Features Replyを受け取ったときに実行される関数
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
