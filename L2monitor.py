@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#L2monitor.py 正規版
+
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
@@ -10,8 +12,7 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from ryu.lib import hub
 import time
-
-
+import sys
 
 
 class L2monitor(app_manager.RyuApp):
@@ -54,61 +55,30 @@ class L2monitor(app_manager.RyuApp):
 
         body = ev.msg.body  #bodyの取得
         datapath = ev.msg.datapath  #datapathオブジェクトの取得
-        
-
-
-
 
         #優先度が10のフローエントリの統計情報を表示
         for stat in [flow for flow in body if flow.priority == 10]:
             if  stat.instructions[0].actions[0].port == 2: #あるフローがポート2から出力されているとき...
-                #デバッグ用
-                print("======================================================") 
-                print("出力ポート2の内容です。")
-                print("このフローエントリにマッチしたパケット数: {}, 総バイト数: {}".format(stat.packet_count, stat.byte_count))
-                self.s1_out_now = stat.packet_count
-                print("======================================================")             
+                self.s1_out_now = stat.packet_count            
                 
             if stat.match["in_port"] == 3: #あるフローがスイッチのポート3から入力されているとき...
-                #デバッグ用
-                print("======================================================") 
-                print("入力ポート3の内容です。")
-                print("このフローエントリにマッチしたパケット数: {}, 総バイト数: {}".format(stat.packet_count, stat.byte_count))
-                self.s2_in_now = stat.packet_count
-                print("======================================================") 
-
-        #デバッグ用
-        print("--------------------------------------------")
-        print("一つのflow stateメッセージ終了")
-        print("s1_out: {}, s2_in: {}".format(self.s1_out_now, self.s2_in_now))
-        print("--------------------------------------------")
+                self.s2_in_now = stat.packet_count 
         
         if self.s1_out_now != self.s1_out_ago and self.s2_in_now != self.s2_in_ago:
-            #デバッグ用
-            print("どっちも更新されたよ")
             A = self.s1_out_now - self.s1_out_ago #s1が5秒間で送信されたパケット数
             B = self.s2_in_now - self.s2_in_ago #s2が5秒間で受信できたパケット数
-            print("s1_out: {}, s2_in: {}".format(self.s1_out_now, self.s2_in_now))
-            print("s1_out: {}, s2_in: {}".format(self.s1_out_ago, self.s2_in_ago))
-            print("A: {}, B:{}".format(A, B))
             loss = (float(A) - float(B))/ float(A) #5秒間のロス率の計算
             print("*************************************")            
             print("5秒毎のOFS間のパケットロス率: {:.2%}".format(loss))
-            print("計算、出力完了")
             self.s1_out_ago = self.s1_out_now
             self.s2_in_ago = self.s2_in_now
             print("*************************************")
-        elif self.s1_out_now != self.s1_out_ago:
-            #デバッグ用
-            print("s1_inだけ更新されたよ")
-        elif self.s2_in_now != self.s2_in_ago:
-            #デバッグ用
-            print("s2_outだけ更新されたよ")
+            print("")
         elif self.s1_out_now == self.s1_out_ago and self.s2_in_now == self.s2_in_ago:
             print("*************************************")
             print("パケットは流れていません")
-            print("パケット流れてない")
             print("*************************************")
+            print("")
         
 
 
@@ -171,11 +141,6 @@ class L2monitor(app_manager.RyuApp):
         #dpidとsrcをin_portに結びつける
         self.mac_to_port.setdefault(dpid, {})
         self.mac_to_port[dpid][src] = in_port
-        '''
-        print("============================================================")
-        print("Datapath ID:{}を持つOFSの{}番ポートからPacket-Inされました！".format(dpid, in_port))
-        print("送信元MACアドレス:{}, 宛先MACアドレス{}".format(src, dst))
-        '''
         if dst in self.mac_to_port[dpid]:
             out_port = self.mac_to_port[dpid][dst]  #Packet-Outするポートを指定
         else:
