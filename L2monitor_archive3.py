@@ -57,27 +57,27 @@ class L2monitor(app_manager.RyuApp):
             print("Action => Port{}に出力".format(stat.instructions[0].actions[0].port))
             print("このフローエントリにマッチしたパケット数: {}, 総バイト数: {}".format(stat.packet_count, stat.byte_count))
 
-        # 課題2を以下に追記
-        if datapath.id == 1 and stat.match["in_port"] == 1:
-            self.A2 = self.A1
-            self.A1 = stat.packet_count
-        elif datapath.id == 2 and stat.match["in_port"] == 3:
-            self.B2 = self.B1
-            self.B1 = stat.packet_count
-        
-        self.count += 1
+            # 課題2を以下に追記
+            if datapath.id == 1 and stat.match["in_port"] == 1:
+                self.A2 = self.A1
+                self.A1 = stat.packet_count
+            elif datapath.id == 2 and stat.match["in_port"] == 3:
+                self.B2 = self.B1
+                self.B1 = stat.packet_count
+            
+            self.count += 1
 
-        if(self.count%4 == 0 and self.count != 0):
-            C = ((self.A1-self.A2)-(self.B1-self.B2))
-            D = self.A1 -self.A2
-            if(D <= 0):
-                print("***************************************")
-                print("パケットが流れていません")
-                print("***************************************")
-            else:
-                print("***************************************")
-                print("5秒毎のOFS間のパケットロス率:{:.2F}".format(float(C)/D * 100))
-                print("***************************************")
+            if(self.count%4 == 0 and self.count != 0):
+                C = ((self.A1-self.A2)-(self.B1-self.B2))
+                D = self.A1 -self.A2
+                if(D <= 0):
+                    print("***************************************")
+                    print("パケットが流れていません")
+                    print("***************************************")
+                else:
+                    print("***************************************")
+                    print("5秒毎のOFS間のパケットロス率:{:.2F}".format(float(C)/D * 100))
+                    print("***************************************")
 
 
 
