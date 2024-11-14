@@ -19,10 +19,10 @@ class L2monitor(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]   #OpenFlow 1.3を利用
 
     # 初期値の入力
-    s1_out_now = 0
-    s2_in_now = 0
-    s1_out_ago = 0
-    s2_in_ago = 0
+    s1_out_now = 0  #switch1 ポート2から出力パケット数
+    s2_in_now = 0   #switch2 ポート3から入力パケット数
+    s1_out_ago = 0  #switch1 ポート2から出力したパケット数
+    s2_in_ago = 0   #switch2 ポート3から出力したパケット数
 
 
     def __init__(self, *args, **kwargs):
