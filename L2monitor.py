@@ -11,8 +11,6 @@ from ryu.ofproto import ofproto_v1_3
 from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from ryu.lib import hub
-import time
-import sys
 
 
 class L2monitor(app_manager.RyuApp):
@@ -23,7 +21,7 @@ class L2monitor(app_manager.RyuApp):
     s2_in_now = 0   #switch2 ポート3から入力パケット数
     s1_out_ago = 0  #switch1 ポート2から出力したパケット数
     s2_in_ago = 0   #switch2 ポート3から出力したパケット数
-
+    
 
     def __init__(self, *args, **kwargs):
         super(L2monitor, self).__init__(*args, **kwargs)
@@ -58,27 +56,29 @@ class L2monitor(app_manager.RyuApp):
 
         #優先度が10のフローエントリの統計情報を表示
         for stat in [flow for flow in body if flow.priority == 10]:
+            self.count = 1
             if  stat.instructions[0].actions[0].port == 2: #あるフローがポート2から出力されているとき...
                 self.s1_out_now = stat.packet_count            
                 
             if stat.match["in_port"] == 3: #あるフローがスイッチのポート3から入力されているとき...
                 self.s2_in_now = stat.packet_count 
         
-        if self.s1_out_now != self.s1_out_ago and self.s2_in_now != self.s2_in_ago:
-            A = self.s1_out_now - self.s1_out_ago #s1が5秒間で送信されたパケット数
-            B = self.s2_in_now - self.s2_in_ago #s2が5秒間で受信できたパケット数
-            loss = (float(A) - float(B))/ float(A) #5秒間のロス率の計算
-            print("*************************************")            
-            print("5秒毎のOFS間のパケットロス率: {:.2%}".format(loss))
-            self.s1_out_ago = self.s1_out_now
-            self.s2_in_ago = self.s2_in_now
-            print("*************************************")
-            print("")
-        elif self.s1_out_now == self.s1_out_ago and self.s2_in_now == self.s2_in_ago:
-            print("*************************************")
-            print("パケットは流れていません")
-            print("*************************************")
-            print("")
+        if self.count == 1:
+            if self.s1_out_now != self.s1_out_ago and self.s2_in_now != self.s2_in_ago:
+                A = self.s1_out_now - self.s1_out_ago #s1が5秒間で送信されたパケット数
+                B = self.s2_in_now - self.s2_in_ago #s2が5秒間で受信できたパケット数
+                loss = (float(A) - float(B))/ float(A) #5秒間のロス率の計算
+                print("*************************************")            
+                print("5秒毎のOFS間のパケットロス率: {:.2%}".format(loss))
+                self.s1_out_ago = self.s1_out_now
+                self.s2_in_ago = self.s2_in_now
+                print("*************************************")
+                print("")
+            elif self.s1_out_now == self.s1_out_ago and self.s2_in_now == self.s2_in_ago:
+                print("*************************************")
+                print("パケットは流れていません")
+                print("*************************************")
+                print("")
         
 
 
