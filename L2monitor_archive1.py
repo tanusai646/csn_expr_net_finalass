@@ -66,19 +66,19 @@ class L2monitor(app_manager.RyuApp):
 
             if stat.match["in_port"] == 1:  
                 self.s1_1_in_now = stat.packet_count
-            elif stat.match["in_port"] == 2:  
+            if stat.match["in_port"] == 2:  
                 self.s1_2_in_now = stat.packet_count
-            elif stat.match["in_port"] == 3:
+            if stat.match["in_port"] == 3: 
                 self.s2_3_in_now = stat.packet_count                        
-            elif stat.match["in_port"] == 4:  
+            if stat.match["in_port"] == 4:  
                 self.s2_4_in_now = stat.packet_count
-            elif  stat.instructions[0].actions[0].port == 1:
+            if  stat.instructions[0].actions[0].port == 1:
                 self.s1_1_out_now = stat.packet_count
-            elif  stat.instructions[0].actions[0].port == 2:
+            if  stat.instructions[0].actions[0].port == 2:
                 self.s1_2_out_now = stat.packet_count
-            elif  stat.instructions[0].actions[0].port == 3:
+            if  stat.instructions[0].actions[0].port == 3:
                 self.s2_3_out_now = stat.packet_count
-            elif  stat.instructions[0].actions[0].port == 4:
+            if  stat.instructions[0].actions[0].port == 4:
                 self.s2_4_out_now = stat.packet_count
     
         
